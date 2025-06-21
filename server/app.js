@@ -10,7 +10,7 @@ mongoose.connect(process.env.MONGO_URL)
     .catch((err) => console.log(err));
 
 app.use(express.json());
-app.use('/jokes', jokesRoutes);
-app.use('/admin', adminRoutes);
+app.use('/', jokesRoutes);
+app.use('/', adminRoutes);
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
