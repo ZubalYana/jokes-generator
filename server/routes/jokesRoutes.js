@@ -23,4 +23,14 @@ router.post('/joke', async (req, res) => {
     }
 });
 
+router.get('/jokes', async (req, res) => {
+    try {
+        const jokes = await Joke.find();
+        res.json(jokes);
+    } catch (error) {
+        console.error('Error fetching jokes:', error);
+        res.status(500).json({ message: 'Failed to fetch jokes', error });
+    }
+});
+
 module.exports = router;
