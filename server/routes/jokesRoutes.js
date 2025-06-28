@@ -3,6 +3,8 @@ const router = express.Router();
 const Joke = require('../models/Jokes');
 const bot = require('../bot');
 
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+
 router.post('/joke', async (req, res) => {
     try {
         const { jokeText, category, author, email } = req.body;
@@ -26,6 +28,17 @@ router.post('/joke', async (req, res) => {
         res.status(500).json({ message: 'Failed to save or send joke', error });
     }
 });
+
+
+router.get('/jokes', async (req, res) => {
+    try {
+        const jokes = await Joke.find();
+        res.json(jokes);
+    } catch (error) {
+        console.error('Error fetching jokes:', error);
+        res.status(500).json({ message: 'Failed to fetch jokes', error });
+    }
+})
 
 router.get('/joke/random', async (req, res) => {
     try {
