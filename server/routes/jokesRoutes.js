@@ -1,16 +1,29 @@
 const express = require('express');
 const router = express.Router();
-const Joke = require('../models/Joke');
+const Joke = require('../models/Jokes');
+const bot = require('../bot');
 
 router.post('/joke', async (req, res) => {
     try {
         const { jokeText, category, author, email } = req.body;
         const newJoke = new Joke({ jokeText, category, author, email, isVerified: false });
         const savedJoke = await newJoke.save();
-        res.status(201).json({ message: 'Joke saved successfully', joke: savedJoke });
+
+        await bot.sendMessage(TELEGRAM_CHAT_ID, `🆕 New joke submitted:\n\n${savedJoke.jokeText}`, {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        { text: '✅ Verify', callback_data: `verify_${savedJoke._id}` },
+                        { text: '❌ Reject', callback_data: `reject_${savedJoke._id}` }
+                    ]
+                ]
+            }
+        });
+
+        res.status(201).json({ message: 'Joke saved and sent for verification', joke: savedJoke });
     } catch (error) {
-        console.error('Error saving joke:', error);
-        res.status(500).json({ message: 'Failed to save joke', error });
+        console.error('Error saving or sending joke:', error);
+        res.status(500).json({ message: 'Failed to save or send joke', error });
     }
 });
 
@@ -40,7 +53,7 @@ router.get('/jokes/stats', async (req, res) => {
         console.error('Error getting joke stats:', error);
         res.status(500).json({ message: 'Failed to fetch joke stats', error });
     }
-//  817d5396eac8832ba2a3bbd53dc2fbafbcf5515b
+    //  817d5396eac8832ba2a3bbd53dc2fbafbcf5515b
 });
 
 module.exports = router;

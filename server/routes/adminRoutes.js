@@ -16,4 +16,20 @@ router.post('/verify', async (req, res) => {
     }
 });
 
+router.post('/reject', async (req, res) => {
+    try {
+        const { jokeId } = req.body;
+        const deleted = await Joke.findByIdAndDelete(jokeId);
+
+        if (!deleted) {
+            return res.status(404).json({ message: 'Joke not found' });
+        }
+
+        res.json({ message: 'Joke rejected and deleted', joke: deleted });
+    } catch (error) {
+        console.error('Error rejecting joke:', error);
+        res.status(500).json({ message: 'Failed to reject joke', error });
+    }
+});
+
 module.exports = router;
