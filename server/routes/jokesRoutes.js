@@ -83,6 +83,23 @@ router.patch('/jokes/:id/like', async (req, res) => {
     res.status(500).json({ error: 'Failed to like joke' });
   }
 });
+router.patch('/jokes/:id/dislike', async (req, res) => {
+  try {
+    const joke = await Joke.findByIdAndUpdate(
+      req.params.id,
+      { $inc: { dislikes: 1 } },
+      { new: true }
+    );
 
+    if (!joke) {
+      return res.status(404).json({ error: 'Joke not found' });
+    }
+
+    res.json(joke);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to dislike joke' });
+  }
+});
 module.exports = router;
 
