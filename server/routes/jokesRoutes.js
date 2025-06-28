@@ -68,6 +68,21 @@ router.get('/jokes/stats', async (req, res) => {
     }
     //  817d5396eac8832ba2a3bbd53dc2fbafbcf5515b
 });
+router.patch('/jokes/:id/like', async (req, res) => {
+  try {
+    const joke = await Joke.findByIdAndUpdate(
+      req.params.id,
+      { $inc: { likes: 1 } },
+      { new: true }
+    );
+
+    if (!joke) return res.status(404).json({ error: 'Joke not found' });
+
+    res.json(joke);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to like joke' });
+  }
+});
 
 module.exports = router;
 
