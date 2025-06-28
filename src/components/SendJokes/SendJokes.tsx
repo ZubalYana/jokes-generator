@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const SendJokes: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [jokeText, setJokeText] = useState<string>('');
-  const [status, setStatus] = useState<'success' | 'error' | null>(null);
 
   const handleSubmit = async () => {
     if (!email || !jokeText) {
-      setStatus('error');
+      toast.warning(' Заповніть всі поля');
       return;
     }
 
@@ -19,12 +20,12 @@ const SendJokes: React.FC = () => {
         category: 'Any',
         author: 'Анонім',
       });
-      setStatus('success');
+
+      toast.success(' Жарт надіслано!');
       setEmail('');
       setJokeText('');
     } catch (error) {
-      console.error('Помилка при відправці жарту:', error);
-      setStatus('error');
+      toast.error(' Помилка! Спробуйте ще раз');
     }
   };
 
@@ -57,18 +58,19 @@ const SendJokes: React.FC = () => {
         >
           Відправити на верифікацію
         </button>
-
-        {status === 'success' && (
-          <p className="text-green-600 text-center mt-4">
-            ✅ Жарт успішно надіслано!
-          </p>
-        )}
-        {status === 'error' && (
-          <p className="text-red-600 text-center mt-4">
-            ❌ Помилка: заповніть всі поля або спробуйте пізніше.
-          </p>
-        )}
       </div>
+
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="colored"
+        limit={1}
+      />
     </div>
   );
 };
