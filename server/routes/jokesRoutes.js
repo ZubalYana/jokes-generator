@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Joke = require('../models/Joke');
+const Joke = require('../models/Jokes');
 
 router.post('/joke', async (req, res) => {
     try {
