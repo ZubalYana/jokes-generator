@@ -2,10 +2,9 @@ const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 require('dotenv').config();
 
-const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
-
-
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
+
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 bot.on('callback_query', async (callbackQuery) => {
     const { data, message } = callbackQuery;
@@ -42,3 +41,5 @@ bot.on('callback_query', async (callbackQuery) => {
 
     await bot.answerCallbackQuery(callbackQuery.id);
 });
+
+module.exports = bot;
