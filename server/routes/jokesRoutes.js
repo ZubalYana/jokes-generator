@@ -4,32 +4,41 @@ const Joke = require('../models/Jokes');
 
 router.post('/joke', async (req, res) => {
     try {
-        console.log(req.body);
         const { jokeText, category, author, email } = req.body;
-
-        const newJoke = new Joke({
-            jokeText,
-            category,
-            author,
-            email,
-            isVerified: false
-        })
-
+        const newJoke = new Joke({ jokeText, category, author, email, isVerified: false });
         const savedJoke = await newJoke.save();
         res.status(201).json({ message: 'Joke saved successfully', joke: savedJoke });
-    } catch (err) {
+    } catch (error) {
         console.error('Error saving joke:', error);
         res.status(500).json({ message: 'Failed to save joke', error });
     }
 });
 
-router.get('/jokes', async (req, res) => {
+router.get('/joke/random', async (req, res) => {
     try {
-        const jokes = await Joke.find();
-        res.json(jokes);
+        const randomJoke = await Joke.aggregate([
+            { $match: { isVerified: true } },
+            { $sample: { size: 1 } }
+        ]);
+        if (randomJoke.length === 0) {
+            return res.status(404).json({ message: 'No verified jokes found' });
+        }
+        res.json(randomJoke[0]);
     } catch (error) {
-        console.error('Error fetching jokes:', error);
-        res.status(500).json({ message: 'Failed to fetch jokes', error });
+        console.error('Error fetching random joke:', error);
+        res.status(500).json({ message: 'Failed to fetch random joke', error });
+    }
+});
+
+router.get('/jokes/stats', async (req, res) => {
+    try {
+        const total = await Joke.countDocuments();
+        const verified = await Joke.countDocuments({ isVerified: true });
+        const unverified = await Joke.countDocuments({ isVerified: false });
+        res.json({ total, verified, unverified });
+    } catch (error) {
+        console.error('Error getting joke stats:', error);
+        res.status(500).json({ message: 'Failed to fetch joke stats', error });
     }
 });
 
